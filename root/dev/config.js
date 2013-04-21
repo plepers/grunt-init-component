@@ -8,7 +8,7 @@ require.config({
     json2:          'libs/scripts/json3/json3',
     backbone:       'libs/scripts/backbone/backbone',
     {% if (templateLanguage === 'handlebars') { %}
-    handlebars:     'libs/scripts/handlebars/handlebars.runtime',{% } %}
+    handlebars:     'libs/scripts/handlebars/handlebars.runtime',
     {% } else if (templateLanguage === 'jade') { %}
     jade:           'libs/scripts/jade/runtime',{% } %}
     chaplin:        'libs/scripts/chaplin/chaplin',

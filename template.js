@@ -17,7 +17,7 @@ exports.template = function(grunt, init, done) {
   init.process({}, [
     // Prompt for the following values.
     // Built-In
-    init.prompt('component name'),
+    init.prompt('name'),
     init.prompt('description'),
     init.prompt('repository'),
     init.prompt('homepage'),
@@ -43,6 +43,11 @@ exports.template = function(grunt, init, done) {
       validator: /sass|scss|less|stylus|none/,
       warning: 'Must be one of the following preprocessors: ' +
         'sass, scss, less, stylus, or none (to indicate no preprocessor).'
+    }, {
+      name: 'bootstrap',
+      message: 'Include Twitter Bootstrap?',
+      default: 'Y/n',
+      warning: 'Yes: Twitter bootstrap is included; no: it\'s not.',
     }
   ], function(err, props) {
     // Files to copy (and process).
@@ -55,6 +60,7 @@ exports.template = function(grunt, init, done) {
     var lang = props.language === 'coffee' ? 'js' : 'coffee';
     files = _.omit(files, function(value, key) {
       if (/^src\/scripts\/vendor/.test(key)) return false;
+      if (/^dev\//.test(key)) return false;
       return _.endsWith(key, lang);
     });
 
@@ -152,7 +158,7 @@ exports.template = function(grunt, init, done) {
     }
 
     // Add properly-named license files.
-    init.addLicenseFiles(files, props.licenses);
+    // init.addLicenseFiles(files, props.licenses);
 
     // Actually copy (and process) files.
     init.copyAndProcess(files, props);
@@ -160,6 +166,7 @@ exports.template = function(grunt, init, done) {
     // Generate package.json file.
     init.writePackageJSON('package.json', _.extend(props, {
       keywords: [props.name],
+      version: '0.1.0',
       node_version: '0.8.x',
       devDependencies: devDependencies
     }));
@@ -201,7 +208,7 @@ exports.template = function(grunt, init, done) {
       'backbone': {'scripts': 'backbone.js'},
       'requirejs': {'scripts': 'require.js'},
       'underscore': {'scripts': 'underscore.js'},
-      'chaplin': {'scripts': 'amd/chaplin.js'}
+      'chaplin': {'scripts': 'build/amd/chaplin.js'}
     };
 
     switch (props.templateLanguage ) {
