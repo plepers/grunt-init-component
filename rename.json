@@ -1,0 +1,3 @@
+{
+  "dev/datas/xxx.html": "dev/datas/{%= name %}-view.html"
+}
