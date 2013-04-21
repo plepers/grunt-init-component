@@ -204,6 +204,7 @@ exports.template = function(grunt, init, done) {
           "styles/..": "mocha.css" },
       'expect': {'scripts': "expect.js" },
       'jquery': {'scripts': 'jquery.js' },
+      "core": { 'scripts': "build/core.js"},
       'almond': {'scripts': 'almond.js' },
       'backbone': {'scripts': 'backbone.js'},
       'requirejs': {'scripts': 'require.js'},
