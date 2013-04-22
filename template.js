@@ -178,7 +178,7 @@ exports.template = function(grunt, init, done) {
       'expect': "0.2.x",
       'jquery': '1.8.x',
       'underscore': '1.4.x',
-      'backbone': '0.9.x',
+      'backbone': '1.0.x',
       'requirejs': '2.1.x',
       'almond': '0.2.x',
       'chaplin': "https://github.com/plepers/chaplin.git",
