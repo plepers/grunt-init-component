@@ -284,7 +284,16 @@ module.exports = (grunt) ->
     watch:
       coffee:
         files: 'src/scripts/**/*.coffee'
-        tasks: [ 'script', 'handlebars:compile', 'jade:compile' ]
+        tasks: [ 
+          'script', 
+
+{% if (templateLanguage === 'handlebars') { %}
+          'handlebars:compile'
+{% } else if (templateLanguage === 'jade') { %}
+          'jade:compile' 
+{% } %}
+
+        ]
         #tasks: 'script'
         options:
           interrupt: true
