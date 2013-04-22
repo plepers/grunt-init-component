@@ -163,16 +163,19 @@ exports.template = function(grunt, init, done) {
     // Actually copy (and process) files.
     init.copyAndProcess(files, props);
 
+
+
     // Generate package.json file.
     init.writePackageJSON('package.json', _.extend(props, {
       keywords: [props.name],
       version: '0.1.0',
       node_version: '0.8.x',
       devDependencies: devDependencies,
-      scripts: {
-        "install": "grunt prepare build"
-      }
-    }));
+    }), function( pkg, props ){
+      pkg.scripts = pkg.scripts|| {};
+      pkg.scripts.install = "grunt prepare build";
+      return pkg;
+    });
 
     // Gather client-side, browser dependencies
     // Collect the standard ones.
