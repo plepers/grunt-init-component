@@ -180,8 +180,6 @@ exports.template = function(grunt, init, done) {
     // Gather client-side, browser dependencies
     // Collect the standard ones.
     var dependencies = {
-      'mocha': "1.9.x",
-      'expect': "0.2.x",
       'jquery': '1.8.x',
       'underscore': '1.4.x',
       'backbone': '1.0.x',
@@ -205,27 +203,23 @@ exports.template = function(grunt, init, done) {
     // to replace the main declaration in the component.json).
     // Collect the standard ones
     var exportsOverride = {
-      'mocha': {
-          "scripts/..": "mocha.js",
-          "styles/..": "mocha.css" },
-      'expect': {'scripts': "expect.js" },
-      'jquery': {'scripts': 'jquery.js' },
-      "core": { 'scripts': "build/core.js"},
-      'almond': {'scripts': 'almond.js' },
-      'backbone': {'scripts': 'backbone.js'},
-      'requirejs': {'scripts': 'require.js'},
-      'underscore': {'scripts': 'underscore.js'},
-      'chaplin': {'scripts': 'build/amd/chaplin.js'}
+      'jquery':     {'./': 'jquery.js' },
+      "core":       {'./': "build/core.js"},
+      'almond':     {'./': 'almond.js' },
+      'backbone':   {'./': 'backbone.js'},
+      'requirejs':  {'./': 'require.js'},
+      'underscore': {'./': 'underscore.js'},
+      'chaplin':    {'./': 'build/amd/chaplin.js'}
     };
 
     switch (props.templateLanguage ) {
       // Handlebars requires a run-time library.
         case 'handlebars' :
-            exportsOverride['handlebars'] = {'scripts': 'handlebars.runtime.js'};
+            exportsOverride['handlebars'] = {'./': 'handlebars.runtime.js'};
             break;
 
         case 'jade' :
-            exportsOverride['jade'] = {'scripts': 'runtime.js'};
+            exportsOverride['jade'] = {'./': 'runtime.js'};
             break;
     }
 
@@ -236,18 +230,18 @@ exports.template = function(grunt, init, done) {
       case 'scss':
         dependencies['bootstrap-sass'] = '2.2.x';
         exportsOverride['bootstrap-sass'] = {
-          'scripts': 'js/**/*.js',
-          'styles': 'lib/**/*.scss',
-          'images': 'img/glyphicons-*.png',
+          './': ['js/**/*.js',
+            'lib/**/*.scss',
+            'img/glyphicons-*.png']
         };
         break;
 
       case 'less':
         dependencies['bootstrap'] = '2.2.x';
         exportsOverride['bootstrap'] = {
-          'styles': 'less/*.less',
-          'scripts': 'js/*.js',
-          'images': 'img/glyphicons-*.png'
+          './': ['less/*.less',
+            'js/*.js',
+            'img/glyphicons-*.png']
         };
         break;
 
@@ -255,9 +249,9 @@ exports.template = function(grunt, init, done) {
       default:
         dependencies['bootstrap'] = '2.2.x';
         exportsOverride['bootstrap'] = {
-          'styles': 'docs/assets/css/bootstrap*.css',
-          'scripts': 'js/*.js',
-          'images': 'img/glyphicons-*.png'
+          './': ['docs/assets/css/bootstrap*.css',
+             'js/*.js',
+             'img/glyphicons-*.png']
         };
       }
     }
@@ -266,7 +260,7 @@ exports.template = function(grunt, init, done) {
     init.writePackageJSON('component.json', {
       name: props.name,
       version: props.version,
-      main: "build/"+props.name+".js",
+      main: ["build/main.js", "build/styles/*"],
       dependencies: dependencies
     }, function(pkg, props) {
       pkg.exportsOverride = exportsOverride;

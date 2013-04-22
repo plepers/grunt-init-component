@@ -8,11 +8,11 @@
 
     <title>Chaplin.js</title>
 
-    <link href="/styles/main.css" rel="stylesheet"/>
+    <link href="/libs/{%= name %}/styles/main.css" rel="stylesheet"/>
     <link href="/favicon.ico" rel="icon"/>
 
 
-    <script src="/libs/scripts/requirejs/require.js"
+    <script src="/libs/requirejs/require.js"
       data-main="core"></script>
 
     <script type="text/javascript">
@@ -22,7 +22,7 @@
             module.exports =
             {
 
-                controllerSuffix: '',
+                controllerSuffix: '/main',
                 controllerPath: '',
                 domModelContainer : document.getElementById( '_skeleton' )
 

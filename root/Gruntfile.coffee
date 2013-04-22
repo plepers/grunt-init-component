@@ -31,7 +31,7 @@ module.exports = (grunt) ->
 
       module:
         files: [
-          dest: "temp/#{pkg.name}"
+          dest: "temp/libs/#{pkg.name}"
           cwd: 'temp/scripts-amd'
           expand: true
           src: [
@@ -53,7 +53,13 @@ module.exports = (grunt) ->
           expand: true
           src:  '**/*'
         ]
-
+      post_build:
+        files: [
+          dest: "build"
+          cwd: "build/libs/#{pkg.name}"
+          expand: true
+          src:  '**/*'
+        ]
 
 
     # Dependency management
@@ -80,7 +86,7 @@ module.exports = (grunt) ->
           expand: true
           cwd: 'src/scripts'
           src: '**/*.coffee'
-          dest: "temp/#{pkg.name}"
+          dest: "temp/libs/#{pkg.name}"
           ext: '.js'
         ]
 {% if (templateLanguage === 'handlebars') { %}
@@ -96,7 +102,7 @@ module.exports = (grunt) ->
           expand: true
           cwd: 'src/scripts'
           src: '**/*.hbs'
-          dest: "temp/#{pkg.name}"
+          dest: "temp/libs/#{pkg.name}"
           ext: '.js'
         ]
 
@@ -115,7 +121,7 @@ module.exports = (grunt) ->
           expand: true
           cwd: 'src/scripts'
           src: '**/*.jade'
-          dest: "temp/#{pkg.name}"
+          dest: "temp/libs/#{pkg.name}"
           ext: '.js'
         ]
 
@@ -136,8 +142,8 @@ module.exports = (grunt) ->
       options:
         sassDir: 'src/styles'
         imagesDir: 'src/images'
-        cssDir: 'temp/styles'
-        javascriptsDir: 'temp/scripts'
+        cssDir: "temp/libs/#{pkg.name}/styles"
+        javascriptsDir: 'temp/scripts' # ??? path to module dir?
         force: true
         relativeAssets: true
 
@@ -155,16 +161,19 @@ module.exports = (grunt) ->
     # -----------------------
     less:
       compile:
-        files:
-          'temp/styles/main.css': 'src/styles/**/*.less'
+        files:(->
+          list = {}
+          list[ "temp/libs/#{pkg.name}/styles/main.css" ] = 'src/styles/**/*.less'
+          list)()
 
         options:
           dumpLineNumbers: 'all'
 
       build:
-        files:
-          'temp/styles/main.css': 'src/styles/**/*.less'
-
+        files:(->
+          list = {}
+          list[ "temp/libs/#{pkg.name}/styles/main.css" ] = 'src/styles/**/*.less'
+          list)()
         options:
           compress: true
           optimization: 2
@@ -174,11 +183,11 @@ module.exports = (grunt) ->
     stylus:
       compile:
         files:
-          'temp/styles/main.css': 'src/styles/**/*.styl'
+          "temp/libs/#{pkg.name}/styles/main.css": 'src/styles/**/*.styl'
 
       build:
         files:
-          'temp/styles/main.css': 'src/styles/**/*.styl'
+          "temp/libs/#{pkg.name}/styles/main.css": 'src/styles/**/*.styl'
 
         options:
           compress: true
@@ -189,7 +198,7 @@ module.exports = (grunt) ->
     urequire:
       convert:
         template: 'AMD'
-        bundlePath: "temp/#{pkg.name}/"
+        bundlePath: "temp/libs/#{pkg.name}/"
         outputPath: 'temp/scripts-amd/'
 
 
@@ -255,12 +264,12 @@ module.exports = (grunt) ->
         options:
           appDir: './temp'
           dir: 'build'
-          baseUrl: './'
+          baseUrl: './libs'
           mainConfigFile: 'dev/config.js'
 
           modules : [
             {
-              name : "#{pkg.name}"
+              name : "#{pkg.name}/main"
               exclude: [
                 'chaplin'
                 'handlebars'
@@ -274,10 +283,10 @@ module.exports = (grunt) ->
 
       css:
         options:
-          out: 'build/styles/#{pkg.name}.css'
+          out: 'build/styles/main.css'
           optimizeCss: 'none'
           cssImportIgnore: null
-          cssIn: 'temp/styles/main.css'
+          cssIn: "temp/libs/#{pkg.name}/styles/main.css"
 
     # Watch
     # -----
@@ -366,7 +375,6 @@ module.exports = (grunt) ->
     'urequire:convert'
     'copy:module'
     'clean:amd'
-    'wrap'
   ]
 
   # Server
@@ -375,13 +383,10 @@ module.exports = (grunt) ->
   # on the output; and, initiates a watcher to re-compile automatically.
   grunt.registerTask 'server', [
     'copy:libs'
-    'copy:dev'
-    {% if (templateLanguage === 'handlebars') { %}
-    'handlebars:compile'{% }
-    else if (templateLanguage === 'jade') { %}
+    'copy:dev'{% if (templateLanguage === 'handlebars') { %}
+    'handlebars:compile'{% }else if (templateLanguage === 'jade') { %}
     'jade:compile'{% } %}
-    'script'
-    {% if (/scss|sass/.test(preprocessor)) { %}
+    'script'{% if (/scss|sass/.test(preprocessor)) { %}
     'compass:compile'{% } else if (preprocessor === 'less') { %}
     'less:compile'{% } else if (preprocessor === 'stylus') { %}
     'stylus:compile'{% } %}
@@ -395,26 +400,24 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', [
     'clean:build'
     'clean:temp'
-    'copy:libs'
-    {% if (templateLanguage === 'handlebars') { %}
-    'handlebars:compile'{% }
-    else if (templateLanguage === 'jade') { %}
+    'copy:libs'{% if (templateLanguage === 'handlebars') { %}
+    'handlebars:compile'{% }else if (templateLanguage === 'jade') { %}
     'jade:compile'{% } %}
-    'script'
-    {% if (/scss|sass/.test(preprocessor)) { %}
+    'script'{% if (/scss|sass/.test(preprocessor)) { %}
     'compass:build'{% } else if (preprocessor === 'less') { %}
     'less:build'{% } else if (preprocessor === 'stylus') { %}
     'stylus:build'{% } %}
     'requirejs:compile'
-    'clean:post_build'
-#    'requirejs:css'
-#    'mincss:compress'
+    'requirejs:css'
+    'mincss:compress'
+    'postbuild'
 #    'htmlmin'
   ]
 
-  grunt.registerTask 'wrap', ->
-    grunt.file.write "temp/#{pkg.name}.js",
-      "// generated wrapper (do not modify)\n"+
-      "define('#{pkg.name}',['require', 'exports', 'module', '#{pkg.name}/main'],\n"+
-      "   function (require, exports, module){  \n"+
-      "      module.exports = require('#{pkg.name}/main');\n   }\n);"
+  # postbuild
+  # -----
+  # Compiles a production build of the application.
+  grunt.registerTask 'postbuild', [
+    'copy:post_build'
+    'clean:post_build'
+  ]
