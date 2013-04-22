@@ -168,7 +168,10 @@ exports.template = function(grunt, init, done) {
       keywords: [props.name],
       version: '0.1.0',
       node_version: '0.8.x',
-      devDependencies: devDependencies
+      devDependencies: devDependencies,
+      scripts: {
+        "install": "grunt prepare build"
+      }
     }));
 
     // Gather client-side, browser dependencies
@@ -260,6 +263,7 @@ exports.template = function(grunt, init, done) {
     init.writePackageJSON('component.json', {
       name: props.name,
       version: props.version,
+      main: "build/"+props.name+".js",
       dependencies: dependencies
     }, function(pkg, props) {
       pkg.exportsOverride = exportsOverride;
