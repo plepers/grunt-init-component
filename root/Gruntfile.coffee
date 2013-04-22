@@ -274,8 +274,8 @@ module.exports = (grunt) ->
 
       css:
         options:
-          out: 'build/styles/main.css'
-          optimizeCss: 'standard.keepLines'
+          out: 'build/styles/#{pkg.name}.css'
+          optimizeCss: 'none'
           cssImportIgnore: null
           cssIn: 'temp/styles/main.css'
 
