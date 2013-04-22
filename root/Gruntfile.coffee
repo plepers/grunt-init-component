@@ -260,7 +260,7 @@ module.exports = (grunt) ->
 
           modules : [
             {
-              name : "#{pkg.name}/main"
+              name : "#{pkg.name}"
               exclude: [
                 'chaplin'
                 'handlebars'
@@ -357,6 +357,7 @@ module.exports = (grunt) ->
     'urequire:convert'
     'copy:module'
     'clean:amd'
+    'wrap'
   ]
 
   # Server
@@ -401,3 +402,10 @@ module.exports = (grunt) ->
 #    'mincss:compress'
 #    'htmlmin'
   ]
+
+  grunt.registerTask 'wrap', ->
+    grunt.file.write "temp/#{pkg.name}.js",
+      "// generated wrapper (do not modify)\n"+
+      "define('#{pkg.name}',['require', 'exports', 'module', '#{pkg.name}/main'],\n"+
+      "   function (require, exports, module){  \n"+
+      "      module.exports = require('#{pkg.name}/main');\n   }\n);"
